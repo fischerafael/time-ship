@@ -1,3 +1,4 @@
+import { CSVLink, CSVDownload } from "react-csv";
 import { Button } from "@chakra-ui/button";
 import { useDisclosure } from "@chakra-ui/hooks";
 
@@ -28,9 +29,9 @@ export const TimeSheet = () => {
     date: "",
     timeIn: 10,
     timeOut: 19,
-    lunchBreakDuration: 0,
-    hoursWorked: 0,
-    tasks: "",
+    lunchBreakDuration: 1,
+    hoursWorked: 8,
+    tasks: "daily, ",
   });
 
   const [days, setDays] = useState<any[]>([]);
@@ -52,12 +53,43 @@ export const TimeSheet = () => {
 
   const onAddDay = () => {
     setDays([...days, day]);
+    setDay({
+      date: "",
+      timeIn: 10,
+      timeOut: 19,
+      lunchBreakDuration: 0,
+      hoursWorked: 0,
+      tasks: "daily, ",
+    });
     onClose();
   };
 
   const onRemoveDay = (date: string) => {
     setDays(days.filter((day) => day.date !== date));
   };
+
+  const formatedCSVDays = days.map((day) => {
+    return [
+      day.date,
+      day.timeIn,
+      day.timeOut,
+      day.lunchBreakDuration,
+      day.hoursWorked,
+      day.tasks,
+    ];
+  });
+
+  const csv = [
+    ["Worker Name", people.workerName, "Worker Email", people.workerEmail],
+    [
+      "Supervisor Name",
+      people.supervisorName,
+      "Supervisor Email",
+      people.supervisorEmail,
+    ],
+    ["Date", "Time In", "Time Out", "Lunch Duration", "Hours Worked", "Tasks"],
+    ...formatedCSVDays,
+  ];
 
   console.log("DAYS", days);
 
@@ -201,12 +233,10 @@ export const TimeSheet = () => {
           </ModalBody>
         </ModalContent>
       </Modal>
-
       <VStack w="full" h="full" maxW="container.lg" p="4" spacing="4">
         <HStack w="full" justify="space-between" h="15vh">
-          <Text fontSize="xl">Time Sheep</Text>
+          <Text fontSize="xl">Time Ship</Text>
         </HStack>
-
         <HStack w="full" justify="space-between">
           <Text fontSize="xl">People Details</Text>
 
@@ -231,7 +261,6 @@ export const TimeSheet = () => {
             </Button>
           </HStack>
         </HStack>
-
         <Flex justify="space-between" w="full">
           <VStack>
             <Text>Worker Name</Text>
@@ -250,7 +279,6 @@ export const TimeSheet = () => {
             <Text>{people.supervisorEmail}</Text>
           </VStack>
         </Flex>
-
         <HStack w="full" justify="space-between">
           <Text fontSize="xl">Days</Text>
 
@@ -267,7 +295,6 @@ export const TimeSheet = () => {
             </Button>
           </HStack>
         </HStack>
-
         <VStack w="full">
           {days.map((day) => (
             <SimpleGrid
@@ -286,6 +313,9 @@ export const TimeSheet = () => {
             </SimpleGrid>
           ))}
         </VStack>
+        <Button colorScheme="teal" alignSelf="flex-end">
+          <CSVLink data={csv}>Download Timesheet</CSVLink>
+        </Button>
       </VStack>
     </VStack>
   );
