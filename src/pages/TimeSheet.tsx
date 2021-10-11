@@ -18,6 +18,8 @@ export const TimeSheet = () => {
 
   const [isPeople, setIsPeople] = useState(true);
 
+  const [fileName, setFileName] = useState("");
+
   const [people, setPeople] = useState({
     workerName: "",
     workerEmail: "",
@@ -91,8 +93,6 @@ export const TimeSheet = () => {
     ...formatedCSVDays,
   ];
 
-  console.log("DAYS", days);
-
   return (
     <VStack w="100vw" h="100vh" align="center" fontFamily="monospace">
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -103,6 +103,16 @@ export const TimeSheet = () => {
             <VStack p="8" w="full" spacing="8">
               {isPeople && (
                 <>
+                  <VStack w="full" align="flex-start">
+                    <Text fontSize="xl" textAlign="left">
+                      Timesheet
+                    </Text>
+                    <Input
+                      value={fileName}
+                      onChange={(e) => setFileName(e.target.value)}
+                      label="Name"
+                    />
+                  </VStack>
                   <VStack w="full" align="flex-start">
                     <Text fontSize="xl" textAlign="left">
                       Worker
@@ -233,52 +243,67 @@ export const TimeSheet = () => {
           </ModalBody>
         </ModalContent>
       </Modal>
-      <VStack w="full" h="full" maxW="container.lg" p="4" spacing="4">
+      <VStack w="full" h="full" maxW="container.lg" p="4" spacing="16">
         <HStack w="full" justify="space-between" h="15vh">
-          <Text fontSize="xl">Time Ship</Text>
+          <Text fontSize="xl" fontWeight="bold">
+            Time Ship
+          </Text>
         </HStack>
-        <HStack w="full" justify="space-between">
-          <Text fontSize="xl">People Details</Text>
+        <VStack w="full" spacing="8">
+          <HStack w="full" justify="space-between">
+            <Text fontSize="xl">People Details</Text>
 
-          <HStack spacing="4">
-            <Button
-              onClick={onRemovePeople}
-              variant="ghost"
-              alignSelf="flex-end"
-              colorScheme="teal"
-            >
-              Remove
-            </Button>
-            <Button
-              onClick={() => {
-                onOpen();
-                setIsPeople(true);
-              }}
-              alignSelf="flex-end"
-              colorScheme="teal"
-            >
-              Add
-            </Button>
+            <HStack spacing="4">
+              <Button
+                onClick={onRemovePeople}
+                variant="ghost"
+                alignSelf="flex-end"
+                colorScheme="teal"
+              >
+                Remove Details
+              </Button>
+              <Button
+                onClick={() => {
+                  onOpen();
+                  setIsPeople(true);
+                }}
+                alignSelf="flex-end"
+                colorScheme="teal"
+              >
+                Add
+              </Button>
+            </HStack>
           </HStack>
-        </HStack>
-        <Flex justify="space-between" w="full">
-          <VStack>
-            <Text>Worker Name</Text>
-            <Text>{people.workerName}</Text>
-          </VStack>
-          <VStack>
-            <Text>Worker Email</Text>
-            <Text>{people.workerEmail}</Text>
-          </VStack>
-          <VStack>
-            <Text>Supervisor Name</Text>
-            <Text>{people.supervisorName}</Text>
-          </VStack>
-          <VStack>
-            <Text>Supervisor Email</Text>
-            <Text>{people.supervisorEmail}</Text>
-          </VStack>
-        </Flex>
+
+          {people.workerName &&
+            people.workerEmail &&
+            people.supervisorName &&
+            people.supervisorEmail && (
+              <SimpleGrid
+                gap="8"
+                templateColumns={["1fr 1fr", "1fr 1fr 1fr 1fr"]}
+                w="full"
+              >
+                <VStack w="full" align="flex-start">
+                  <Text>Worker Name</Text>
+                  <Text wordBreak="break-word">{people.workerName}</Text>
+                </VStack>
+                <VStack w="full" align="flex-start">
+                  <Text>Worker Email</Text>
+                  <Text wordBreak="break-word">{people.workerEmail}</Text>
+                </VStack>
+                <VStack w="full" align="flex-start">
+                  <Text>Supervisor Name</Text>
+                  <Text wordBreak="break-word">{people.supervisorName}</Text>
+                </VStack>
+                <VStack w="full" align="flex-start">
+                  <Text>Supervisor Email</Text>
+                  <Text wordBreak="break-word">{people.supervisorEmail}</Text>
+                </VStack>
+              </SimpleGrid>
+            )}
+        </VStack>
+
         <HStack w="full" justify="space-between">
           <Text fontSize="xl">Days</Text>
 
@@ -295,27 +320,45 @@ export const TimeSheet = () => {
             </Button>
           </HStack>
         </HStack>
-        <VStack w="full">
+        <VStack w="full" spacing="4">
+          {days.length && (
+            <SimpleGrid
+              w="full"
+              templateColumns="2fr 1fr 1fr 1fr 1fr 3fr 1fr"
+              gap="2"
+            >
+              <Text fontSize="xs">Date</Text>
+              <Text fontSize="xs">Time In</Text>
+              <Text fontSize="xs">Time Out</Text>
+              <Text fontSize="xs">Lunch Duration</Text>
+              <Text fontSize="xs">Hours Worked</Text>
+              <Text fontSize="xs">Tasks Done</Text>
+            </SimpleGrid>
+          )}
+
           {days.map((day) => (
             <SimpleGrid
               w="full"
-              templateColumns="3fr 1fr 1fr 1fr 1fr 3fr 1fr"
+              templateColumns="2fr 1fr 1fr 1fr 1fr 3fr 1fr"
               gap="2"
+              alignItems="center"
               key={day.date}
             >
-              <Text>{day.date}</Text>
-              <Text>{day.timeIn}</Text>
-              <Text>{day.timeOut}</Text>
-              <Text>{day.lunchBreakDuration}</Text>
-              <Text>{day.hoursWorked}</Text>
-              <Text>{day.tasks}</Text>
+              <Text wordBreak="break-word">{day.date}</Text>
+              <Text wordBreak="break-word">{day.timeIn}</Text>
+              <Text wordBreak="break-word">{day.timeOut}</Text>
+              <Text wordBreak="break-word">{day.lunchBreakDuration}</Text>
+              <Text wordBreak="break-word">{day.hoursWorked}</Text>
+              <Text wordBreak="break-word">{day.tasks}</Text>
               <Button onClick={() => onRemoveDay(day.date)}>X</Button>
             </SimpleGrid>
           ))}
+          <Button colorScheme="teal" alignSelf="flex-end">
+            <CSVLink filename={`${fileName}.csv`} data={csv}>
+              Download Timesheet
+            </CSVLink>
+          </Button>
         </VStack>
-        <Button colorScheme="teal" alignSelf="flex-end">
-          <CSVLink data={csv}>Download Timesheet</CSVLink>
-        </Button>
       </VStack>
     </VStack>
   );
